@@ -2,14 +2,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #222325;
-  --color-secondary: #333333ad;
-  --color-tertiary: #3ecf4c;
-  --color-quaternary: #ff5c2b;
-
   --bg-primary: #ffbd3a;  
   --bg-secondary: #e2fcd9cc;
-
+  --background-image-hero: url('./assets/img/bgImg.jpg');
+  --background-image-call: url('./assets/img/bgImg2.jpg');
   --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
   --font-display: "DM Sans", sans-serif;
 }

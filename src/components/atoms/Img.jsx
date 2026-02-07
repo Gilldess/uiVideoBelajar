@@ -1,6 +1,6 @@
-const Img = ({ url,ket, styleImg }) => {
+const Img = ({ url, alt, styleImg }) => {
     return (
-        <img src={url} alt={ket} className={`object-cover ${styleImg}`} />
+        <img src={url} alt={alt} className={`object-cover ${styleImg}`} />
     )
 }
 
