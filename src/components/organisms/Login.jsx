@@ -18,33 +18,35 @@ function Login() {
       </div>
       <div className="mt-9">
         <div className="flex flex-col gap-6">
-          <div className="flex text-end flex-col gap-4">
-            <Froam htmlFor="email" text="E-Mail" type="email" />
-            <Froam htmlFor="password" text="Kata Sandi" type="password">
-              <RiEyeOffLine className="absolute top-3 w-6 h-6 right-2.5 text-[#6C717A]" />
-            </Froam>
-            <p className="font-display font-medium text-sm md:text-[16px] text-[#4A505C]">
-              Lupa Password?
-            </p>
-          </div>
-          <div className="flex flex-col gap-4">
-            <Button
-              onClick={() => {}}
-              size="primary"
-              varianstyle="primary"
-              style="w-full"
-            >
-              Masuk
-            </Button>
-            <Button
-              onClick={() => {}}
-              size="primary"
-              varianstyle="tertiary"
-              style="w-full"
-            >
-              Daftar
-            </Button>
-          </div>
+          <form action="" className="flex flex-col gap-6">
+            <div className="flex text-end flex-col gap-4">
+              <Froam htmlFor="email" text="E-Mail" type="email" />
+              <Froam htmlFor="password" text="Kata Sandi" type="password">
+                <RiEyeOffLine className="absolute top-3 w-6 h-6 right-2.5 text-[#6C717A]" />
+              </Froam>
+              <p className="font-display font-medium text-sm md:text-[16px] text-[#4A505C]">
+                Lupa Password?
+              </p>
+            </div>
+            <div className="flex flex-col gap-4">
+              <Button
+                onClick={() => {}}
+                size="primary"
+                varianstyle="primary"
+                style="w-full"
+              >
+                Masuk
+              </Button>
+              <Button
+                onClick={() => {}}
+                size="primary"
+                varianstyle="tertiary"
+                style="w-full"
+              >
+                Daftar
+              </Button>
+            </div>
+          </form>
           <div className="flex items-center">
             <div className="flex-grow border-t border-gray-400"></div>
             <span className="flex-shrink mx-2 text-sm md:text-[16px] text-gray-500">
