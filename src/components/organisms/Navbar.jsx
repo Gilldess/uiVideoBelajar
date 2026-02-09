@@ -1,4 +1,4 @@
-import Logo from "../../assets/img/logo.png"
+import Logo from "../../assets/img/Logo.png"
 import Img from "../atoms/Img"
 import Text from "../atoms/Text"
 const Navbar = ({children = "", text = ""}) => {
