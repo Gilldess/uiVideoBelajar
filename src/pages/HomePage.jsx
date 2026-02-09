@@ -4,11 +4,20 @@ import HomeLayout from "../components/templates/HomeLayout"
 import Collection from "../components/organisms/Collection"
 import Button from "../components/atoms/Button"
 import Footer from "../components/organisms/Footer"
+import { RiMenuLine } from "@remixicon/react"
+import Profile from "../assets/img/profile.png"
+import Img from "../components/atoms/Img"
 
 export const HomePage = () => {
     return (
         <HomeLayout 
-        navbar={<Navbar/>}
+        navbar={<Navbar 
+            text="Kategori">
+            <RiMenuLine className="text-3xl lg:hidden"/> 
+            <div className="w-11 h-11 rounded-[10px] hidden lg:block overflow-hidden">
+             <Img url={Profile} styleImg="w-full h-full" alt="profile"/>
+            </div>
+        </Navbar>}
         hero={<Hero 
         level={1} 
         bgimg="bg-hero"
