@@ -1,7 +1,7 @@
 import Heading from "../atoms/Heading";
 import Img from "../atoms/Img"
 import Text from "../atoms/Text";
-const Card = ({ imgclass,alt, heading, sub, imgpp, ket, name, job, imgrate,rate, price }) => {
+const Card = ({ imgclass,alt = "image", heading, sub, imgpp, ket, name, job, imgrate,rate, price, company = "Gojek" }) => {
     return (
         <div className="xl:p-5 min-[330px]:p-4 p-3 bg-[#FFFFFF] w-full md:w-89 lg:w-79 xl:w-[384px] rounded-[10px] flex flex-col gap-2 md:gap-4">
             <div className="w-full flex md:flex-col items-center gap-3 md:gap-4">
@@ -19,7 +19,7 @@ const Card = ({ imgclass,alt, heading, sub, imgpp, ket, name, job, imgrate,rate,
                         </div>
                         <div>
                             <Text size="medium1" color="tertiary">{name}</Text>
-                            <Text size="reguler2" color="primary">{job}<span className="hidden md:inline-block">di <b>Gojek</b></span></Text>
+                            <Text size="reguler2" color="primary">{job}<span className="hidden md:inline-block">di <b>{company}</b></span></Text>
                         </div>
                     </div>
                 </div>

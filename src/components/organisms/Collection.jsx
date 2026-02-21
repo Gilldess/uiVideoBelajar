@@ -3,6 +3,7 @@ import Text from "../atoms/Text";
 import { useState } from "react";
 import Card from "../molecules/Card";
 import { collectionVideo } from "../../config/dataVideo";
+import Button from "../atoms/Button";
 
 const Collection = () => {
   const filters = [
@@ -25,20 +26,20 @@ const Collection = () => {
       </div>
       <div className="md:flex hidden gap-9">
         {filters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={`
-            relative pb-2 font-medium transition-all duration-300 ease-in-out
-            ${
-              activeFilter === filter
-                ? "text-orange-500 border-b-2 border-orange-500"
-                : "text-[#333333AD] border-b-2 border-transparent hover:text-black hover:border-black"
-            }
-          `}
-          >
-            {filter}
-          </button>
+          <Button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`
+              relative pb-2 font-medium transition-all duration-300 ease-in-out
+              ${
+                activeFilter === filter
+                  ? "text-orange-500 border-b-2 border-orange-500"
+                  : "text-[#333333AD] border-b-2 border-transparent hover:text-black hover:border-black"
+              }
+            `}
+            >
+              {filter}
+          </Button>
         ))}
       </div>
       <select className="md:hidden border-2 border-[#F64920] p-2 rounded-md">

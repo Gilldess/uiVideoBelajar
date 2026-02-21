@@ -1,7 +1,7 @@
 import Input from "../atoms/Input"
 import Label from "../atoms/Label"
 
-const Froam = ({htmlFor, text, type, children=""}) => {
+const InputLabel = ({htmlFor, text, type, children=""}) => {
     return (
         <div className="flex flex-col w-full">
             <div className="flex gap-1">
@@ -15,4 +15,4 @@ const Froam = ({htmlFor, text, type, children=""}) => {
     )
 }
 
-export default Froam
+export default InputLabel;

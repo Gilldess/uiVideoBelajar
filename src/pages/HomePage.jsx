@@ -4,18 +4,37 @@ import HomeLayout from "../components/templates/HomeLayout"
 import Collection from "../components/organisms/Collection"
 import Button from "../components/atoms/Button"
 import Footer from "../components/organisms/Footer"
-import { RiMenuLine } from "@remixicon/react"
+import { RiLogoutBoxRLine, RiMenuLine } from "@remixicon/react"
 import Profile from "../assets/img/profile.png"
 import Img from "../components/atoms/Img"
+import { useState } from "react"
+import { Link } from "react-router"
+
 
 export const HomePage = () => {
+    const [menu, setMenu] = useState(false)
+    
+    const handelMenu = () => {
+        setMenu(!menu)
+    }
     return (
         <HomeLayout 
         navbar={<Navbar 
+            setMenu={()=> handelMenu()}
             text="Kategori">
-            <RiMenuLine className="text-3xl lg:hidden"/> 
+            <Button onClick={()=> handelMenu()}>
+                <RiMenuLine className="text-3xl lg:hidden"/> 
+            </Button>
             <div className="w-11 h-11 rounded-[10px] hidden lg:block overflow-hidden">
              <Img url={Profile} styleImg="w-full h-full" alt="profile"/>
+            </div>
+            <div className={`absolute top-11 z-10 right-0 lg:right-28 xl:20 transition-all duration-500 w-full lg:w-50 pt-1 shadow-lg bg-[#FFFFFF] rounded-b-sm ${menu ? "translate-y-5" : "-translate-y-100" }`}>
+                <div className="flex flex-col">
+                    <Link to="/" onClick={()=> handelMenu()} className="py-4 px-3 text-start font-normal text-[#333333AD] border-b border-[#3A35411F]">Profil Saya</Link>
+                    <Link to="/" onClick={()=> handelMenu()} className="py-4 px-3 text-start font-normal text-[#333333AD] border-b border-[#3A35411F]">Kelas Saya</Link>
+                    <Link to="/" onClick={()=> handelMenu()} className="py-4 px-3 text-start font-normal text-[#333333AD] border-b border-[#3A35411F]">Pesanan Saya</Link>
+                    <Link to="/" onClick={()=> handelMenu()} className="py-4 px-3 text-start font-normal text-[#FF5C2B] border-b flex gap-1.25">Keluar <RiLogoutBoxRLine /></Link>
+                </div>
             </div>
         </Navbar>}
         hero={<Hero 
