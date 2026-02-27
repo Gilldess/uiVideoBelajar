@@ -2,10 +2,11 @@ import Heading from "../atoms/Heading";
 import Text from "../atoms/Text";
 import { useState } from "react";
 import Card from "../molecules/Card";
-import { collectionVideo } from "../../config/dataVideo";
+import { UseVideoManager } from "../../hooks/UseVideoManager";
 import Button from "../atoms/Button";
 
 const Collection = () => {
+  const { dataVideo } = UseVideoManager();
   const filters = [
     "Semua Kelas",
     "Pemasaran",
@@ -51,7 +52,7 @@ const Collection = () => {
       </select>
       <div className="flex flex-wrap gap-4 xl:gap-6">
         {
-          collectionVideo.map((item) => (
+          dataVideo.map((item) => (
             <Card key={item.id} imgclass={item.img} alt={item.alt} heading={item.title} sub={item.sub} imgpp={item.profil} name={item.name} job={item.job} imgrate={item.imgrate} rate={item.rate} price={item.price}/>
           ))
         }

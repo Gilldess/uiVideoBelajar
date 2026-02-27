@@ -6,7 +6,7 @@ import google from "../../assets/img/google.png";
 
 function TempleatForam ({children}) {
   return (
-    <div className="p-5 md:p-9 bg-[#ffffff] border border-[#f1f1f1] w-full md:w-174.5 rounded-sm">
+    <div className="p-5 relative md:p-9 bg-[#ffffff] border border-[#f1f1f1] w-full md:w-174.5 rounded-sm">
       {children}
     </div>
   );

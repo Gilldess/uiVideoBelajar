@@ -8,15 +8,18 @@ import Img from "../components/atoms/Img";
 import Input from "../components/atoms/Input";
 import { RiEyeOffLine } from "@remixicon/react";
 import Button from "../components/atoms/Button";
+import { UserManager } from "../hooks/UserManager";
 
 const SignUpPage = ()=> {
+    const {setEditValue, editValue, HandleCreate} =UserManager([]);
+
     return (
         <SignUpLayout navbar={<Navbar />} froamsignup={
         <TempleatForam>
             <TempleatForam.Header heading="Pendaftaran Akun" text="Yuk, daftarkan akunmu sekarang juga!" />
             <TempleatForam.Body>
                 <div className="flex text-end flex-col gap-4">
-                    <InputLabel htmlFor="name" text="Nama" type="text" />
+                    <InputLabel htmlFor="name" text="Nama" type="text" value={editValue} onChange={(e)=>setEditValue(e.target.value)} />
                     <InputLabel htmlFor="email" text="E-Mail" type="email" />
                     <div className="flex gap-4 w-full items-end">
                         <div>
@@ -41,13 +44,13 @@ const SignUpPage = ()=> {
                     <InputLabel htmlFor="password" text="Kata Sandi" type="password">
                         <RiEyeOffLine className="absolute top-3 w-6 h-6 right-2.5 text-[#6C717A]" />
                     </InputLabel>
-                    <InputLabel htmlFor="checkpwd" text="Konfirmasi Kata Sandi" type="checkpwd">
+                    <InputLabel htmlFor="checkpwd" text="Konfirmasi Kata Sandi" type="password">
                         <RiEyeOffLine className="absolute top-3 w-6 h-6 right-2.5 text-[#6C717A]" />
                     </InputLabel>
                 </div>
                 <div className="flex flex-col gap-4">
                     <Button
-                    onClick={() => {}}
+                    onClick={HandleCreate}
                     size="primary"
                     varianstyle="tertiary"
                     style="w-full"
