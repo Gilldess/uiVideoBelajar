@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react"
+import useApiUsers from "../stores/useApiUsers"
+import { useShallow } from "zustand/shallow"
 
 export const UserManager = (users) => {
+        const {postUsers, deletUser, editUser}=useApiUsers(useShallow ((state) => ({
+            postUsers: state.postUsers,
+            deletUser: state.deletUser,
+            editUser: state.editUser
+        })))
         const [data, setData] = useState(()=> {
         const localData = localStorage.getItem("userdata")
         return localData ? JSON.parse(localData) : users
@@ -11,45 +18,45 @@ export const UserManager = (users) => {
     }, [data])
 
     const [edit, setEdit] = useState(null)
-    const [editValue, setEditValue] = useState("")
+    const [editValue, setEditValue] = useState({name: "", email: "", nomer: ""})
     const [cancel, setCancel] = useState(false)
     const [menu, setMenu] = useState("pengguna")
 
-    const HandleCreate = () => {
-        if (editValue.trim() === "") {
-            alert("Nama tidak boleh kosong")
+    const HandleCreate = async (e) => {
+        e.preventDefault();
+        if (editValue.name === "" || editValue.email === "" || editValue.nomer === "") {
+            alert("Lengkapi Form Anda")
             return;
         };
         const newData ={
             id: Date.now(),
-            name: editValue
+            name: editValue.name,
+            email: editValue.email,
+            nomer: editValue.nomer
         }
-        setData([...data, newData])
-        setEditValue("")
+        await postUsers(newData)
+        setEditValue({name: "", email: "", nomer: ""})
         setCancel(false)
     }
 
-    const handleDelete = (id)=> {
+    const handleDelete = async (id)=> {
         const confirmDelete = window.confirm("Anda yakin ingin menghapus data ini?")
         if (!confirmDelete) return; 
-        const updateDataUsers = data.filter((user)=> user.id !== id)
-        setData(updateDataUsers)
+        await deletUser(id)
     }
     const handleEdit = (user)=> {
         setEdit(user.id)
-        setEditValue(user.name)
+        setEditValue({id: user.id, name: user.name, email: user.email, nomer: user.nomer})
         setCancel(true)
     }
     const HandleCancel = () => {
         setCancel(false)
         setEdit(null);
-        setEditValue("")
+        setEditValue({name: "", email: "", nomer: ""})
     }
-    const HandleUpdate = () => {
-        const updateDataUsers = data.map((user)=> 
-        user.id === edit ? {...user, name: editValue} : user
-        )
-        setData(updateDataUsers)
+    const HandleUpdate = async (e) => {
+        e.preventDefault();
+        await editUser(editValue.id, editValue)
         HandleCancel()
     }
     

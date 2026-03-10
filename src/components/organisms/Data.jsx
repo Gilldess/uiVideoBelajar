@@ -7,26 +7,44 @@ import { UserManager } from "../../hooks/UserManager";
 import { UseVideoManager } from "../../hooks/UseVideoManager";
 import Heading from "../atoms/Heading";
 import Img from "../atoms/Img";
+import useApiUsers from "../../stores/useApiUsers";
+import { useShallow } from "zustand/shallow";
+import { useEffect } from "react";
 
 const Data = () => {
-    const users = [
-        {
-            id: 1,
-            name: "Budi",
-        },
-        {
-            id: 2,
-            name: "Edi",
-        }
-    ]
-    const {data, edit, editValue, setEditValue, cancel, setCancel, menu, setMenu, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate} = UserManager(users)
+    const {dataUsers, isError, isLoading, getAllUsers} = useApiUsers(useShallow((state)=> ({
+        dataUsers: state.dataUsers,
+        isError: state.isError,
+        isLoading: state.isLoading,
+        getAllUsers: state.getAllUsers
+    })))
+    const { edit, editValue, setEditValue, cancel, setCancel, menu, setMenu, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate} = UserManager()
     const {dataVideo, foramData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo} = UseVideoManager()
+
+    const handleChangeValue = (e) => {
+        const {name, value} = e.target;
+        setEditValue({...editValue, [name]: value})
+    }
+
+useEffect(()=> {
+    const fetch = async () => {
+        await getAllUsers()
+    }
+    fetch()
+},[])
+    const fetdata = async () => {
+        await getAllUsers()
+    }
 
     return (
         <div>
+                {
+                    isLoading && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
+                }
             <div className="flex gap-4 md:gap-8 px-4 py-2 border w-fit rounded-md border-[#3A35411F]">
                 <Button style={`border-b-2 rounded-none ${menu === "pengguna" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setMenu("pengguna")}>Pengguna</Button>
                 <Button style={`border-b-2 rounded-none ${menu === "koleksi" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setMenu("koleksi")}>Koleksi</Button>
+                <button onClick={fetdata}>Fetch</button>
             </div>
             <div className={`inset-0 w-full h-full bg-black/70 ${cancel || open ? "fixed" : "hidden"}`}>
                 <div className="flex w-full h-full justify-center items-center">
@@ -42,14 +60,31 @@ const Data = () => {
                                     htmlFor="name" 
                                     text="Nama Pengguna"
                                     type="text"
-                                    value={editValue}
-                                    onChange={(e) => setEditValue(e.target.value)}
+                                    placeholder="Masukan Nama"
+                                    value={editValue.name}
+                                    onChange={handleChangeValue}
+                                />
+                                <InputLabel 
+                                    htmlFor="email" 
+                                    text="Email"
+                                    type="email"
+                                    placeholder="Masukan Email"
+                                    value={editValue.email}
+                                    onChange={handleChangeValue}
+                                />
+                                <InputLabel 
+                                    htmlFor="nomer" 
+                                    text="Hp"
+                                    type="number"
+                                    placeholder="Masukan No Hp"
+                                    value={editValue.nomer}
+                                    onChange={handleChangeValue}
                                 />
                                 <div className="flex flex-col gap-2 mt-4">
                                     <Button type="submit" size="primary" varianstyle="primary" style="w-full">
                                         {edit ? "Update Pengguna" : "Create Pengguna"}
                                     </Button>
-                                    <Button onClick={HandleCancel} size="primary" varianstyle="tertiary" style="w-full">
+                                    <Button type="button" onClick={HandleCancel} size="primary" varianstyle="tertiary" style="w-full">
                                         Batal
                                     </Button>
                                 </div>
@@ -109,15 +144,26 @@ const Data = () => {
                         </div>
                         <div className="flex flex-col gap-4 py-4 px-4 md:px-8">
                             {
-                                data.map((user)=> (
-                                    <div key={user.id} className="flex justify-between items-center">
-                                        <Text size="medium1" color="tertiary">{user.name}</Text>
-                                        <div className="flex gap-2 md:gap-8 items-center mr-5">
+                               dataUsers.length > 0 ? dataUsers.map((user)=> (
+                                    <div key={user.id} className="flex justify-between items-center pb-2 border-b-2 border-[#3A35411F]">
+                                        <div className="flex flex-col md:flex-row gap-1 md:gap-8 md:items-center" >
+                                            <Text size="medium1" color="tertiary" styleText="break-all w-40 line-clamp-2">{user.name}</Text>
+                                            <div>
+                                                <Text size="medium1" color="tertiary" styleText="break-all w-43 md:w-80 line-clamp-2">{user.email}</Text>
+                                                <Text size="medium1" color="tertiary">{user.nomer}</Text>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 md:gap-4 items-center md:mr-5">
                                             <RiEdit2Line onClick={()=> handleEdit(user)} className="cursor-pointer bg-[#3ecf4c] w-7 h-7 md:w-9 md:h-9 p-2 rounded-full" />
                                             <RiDeleteBin7Line onClick={()=> handleDelete(user.id)} className="cursor-pointer bg-red-600 w-7 h-7 md:w-9 md:h-9 p-2 rounded-full" />
                                         </div>
                                     </div>
                                 ))
+                                 :
+                                <div className="text-center">
+                                    <Text size="medium1" color="primary" styleText="mb-2">`(*&gt;﹏&lt;*)′</Text>
+                                    <Text size="medium1" color="tertiary">Belum Ada Data</Text>
+                                </div>
                             }
                         </div>
                     </div> : 
@@ -144,7 +190,7 @@ const Data = () => {
                                                 </div>
                                                 <div className="px-4">
                                                     <Text size="medium1" color="tertiary">{video.name}</Text>
-                                                    <Text size="reguler2" color="primary" styleText="hidden md:inline-block">{video.job}<span>di <b>Gojek</b></span></Text>
+                                                    <Text size="reguler2" color="primary" styleText="hidden md:inline-block">{video.job}<span> di <b>Gojek</b></span></Text>
                                                 </div>
                                             </div>
                                             <div className="flex gap-2 md:gap-8 items-center">
@@ -163,6 +209,10 @@ const Data = () => {
                     </div>
                 }
             </div>
+
+            {
+                isError && <Text size="medium1" styleText="text-red-600 text-center mt-2">{isError} !!!</Text>
+            }
         </div>
     )
 }

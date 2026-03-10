@@ -38,7 +38,7 @@ const SignUpPage = ()=> {
                             </div>
                         </div>
                         <div className="flex-1">
-                            <Input type="number" label="hp"/>
+                            <Input name="nomer" type="number" label="hp"/>
                         </div>
                     </div>
                     <InputLabel htmlFor="password" text="Kata Sandi" type="password">
