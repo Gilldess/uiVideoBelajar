@@ -1,12 +1,22 @@
 import Heading from "../atoms/Heading";
 import Text from "../atoms/Text";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../molecules/Card";
-import { UseVideoManager } from "../../hooks/UseVideoManager";
 import Button from "../atoms/Button";
+import useApiVideo from "../../stores/useApiVideo";
+import { useShallow } from "zustand/shallow";
+import imgRate from "../../assets/img/Rating.png";
 
 const Collection = () => {
-  const { dataVideo } = UseVideoManager();
+  const { dataVideo, getVideo } = useApiVideo(useShallow((state) => ({ dataVideo: state.dataVideo, getVideo: state.getVideo })))
+  useEffect(()=> {
+    const fetch = async () => {
+      await getVideo()  
+    }
+    fetch()
+  },[])
+
+  console.log(dataVideo)
   const filters = [
     "Semua Kelas",
     "Pemasaran",
@@ -53,7 +63,7 @@ const Collection = () => {
       <div className="flex flex-wrap gap-4 xl:gap-6">
         {
           dataVideo.map((item) => (
-            <Card key={item.id} imgclass={item.img} alt={item.alt} heading={item.title} sub={item.sub} imgpp={item.profil} name={item.name} job={item.job} imgrate={item.imgrate} rate={item.rate} price={item.price}/>
+            <Card key={item.id} imgclass={item.imgvideo} heading={item.title} sub={item.sub} imgpp={item.avatar} name={item.name} job={item.job} imgrate={imgRate} rate={item.rate} price={item.harga}/>
           ))
         }
         </div>
