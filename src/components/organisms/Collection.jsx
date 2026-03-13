@@ -16,7 +16,7 @@ const Collection = () => {
     fetch()
   },[])
 
-  console.log(dataVideo)
+  console.log("Tipe dataVideo:", typeof dataVideo, Array.isArray(dataVideo));
   const filters = [
     "Semua Kelas",
     "Pemasaran",
@@ -62,7 +62,7 @@ const Collection = () => {
       </select>
       <div className="flex flex-wrap gap-4 xl:gap-6">
         {
-          dataVideo?.map((item) => (
+          (dataVideo || []).map((item) => (
             <Card key={item.id} imgclass={item.imgvideo} heading={item.title} sub={item.sub} imgpp={item.avatar} name={item.name} job={item.job} imgrate={imgRate} rate={item.rate} price={item.harga}/>
           ))
         }

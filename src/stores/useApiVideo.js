@@ -9,7 +9,7 @@ const useApiVideo = create((set)=> ({
         set({isVideoLoading: true})
         try {
             const data = await apiVideo.getVideo();
-            set({dataVideo: data, isVideoError: null})
+            set({dataVideo: Array.isArray(data) ? data : [], isVideoError: null})
         } catch (error) {
             set({isVideoError: error.message})
         } finally {
