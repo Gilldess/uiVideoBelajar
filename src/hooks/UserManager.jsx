@@ -20,7 +20,6 @@ export const UserManager = (users) => {
     const [edit, setEdit] = useState(null)
     const [editValue, setEditValue] = useState({name: "", email: "", nomer: ""})
     const [cancel, setCancel] = useState(false)
-    const [menu, setMenu] = useState("pengguna")
 
     const HandleCreate = async (e) => {
         e.preventDefault();
@@ -60,5 +59,5 @@ export const UserManager = (users) => {
         HandleCancel()
     }
     
-    return {data, setData, edit, setEdit, editValue, setEditValue, cancel, setCancel, menu, setMenu, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate,}
+    return {data, setData, edit, setEdit, editValue, setEditValue, cancel, setCancel, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate,}
 }

@@ -2,6 +2,7 @@
 @import "tailwindcss";
 
 @theme {
+  --breakpoint-mobile-sm: 370px;
   --bg-primary: #ffbd3a;  
   --bg-secondary: #e2fcd9cc;
   --background-image-hero: url('./assets/img/bgImg.jpg');

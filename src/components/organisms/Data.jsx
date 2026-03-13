@@ -10,6 +10,8 @@ import Img from "../atoms/Img";
 import useApiUsers from "../../stores/useApiUsers";
 import { useShallow } from "zustand/shallow";
 import { useEffect } from "react";
+import useListMenu from "../../stores/useListMenu";
+import useApiVideo from "../../stores/useApiVideo";
 
 const Data = () => {
     const {dataUsers, isError, isLoading, getAllUsers} = useApiUsers(useShallow((state)=> ({
@@ -18,8 +20,15 @@ const Data = () => {
         isLoading: state.isLoading,
         getAllUsers: state.getAllUsers
     })))
-    const { edit, editValue, setEditValue, cancel, setCancel, menu, setMenu, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate} = UserManager()
-    const {dataVideo, foramData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo} = UseVideoManager()
+    const { edit, editValue, setEditValue, cancel, setCancel, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate} = UserManager()
+    const { foramData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo} = UseVideoManager()
+    const {listMenu, setListMenu} = useListMenu(useShallow((state) => ({listMenu: state.listMenu, setListMenu: state.setListMenu})))
+    const {dataVideo, isVideoLoadin, isVideoError, getVideo} = useApiVideo(useShallow((state) => ({
+        dataVideo: state.dataVideo,
+        getVideo: state.getVideo,
+        isVideoError: state.isVideoError,
+        isVideoLoadin: state.isVideoLoading
+    })))
 
     const handleChangeValue = (e) => {
         const {name, value} = e.target;
@@ -29,27 +38,21 @@ const Data = () => {
 useEffect(()=> {
     const fetch = async () => {
         await getAllUsers()
+        await getVideo()
     }
     fetch()
 },[])
-    const fetdata = async () => {
-        await getAllUsers()
-    }
 
     return (
         <div>
-                {
-                    isLoading && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
-                }
             <div className="flex gap-4 md:gap-8 px-4 py-2 border w-fit rounded-md border-[#3A35411F]">
-                <Button style={`border-b-2 rounded-none ${menu === "pengguna" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setMenu("pengguna")}>Pengguna</Button>
-                <Button style={`border-b-2 rounded-none ${menu === "koleksi" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setMenu("koleksi")}>Koleksi</Button>
-                <button onClick={fetdata}>Fetch</button>
+                <Button style={`border-b-2 rounded-none ${listMenu === "pengguna" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setListMenu("pengguna")}>Pengguna</Button>
+                <Button style={`border-b-2 rounded-none ${listMenu === "koleksi" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setListMenu("koleksi")}>Koleksi</Button>
             </div>
             <div className={`inset-0 w-full h-full bg-black/70 ${cancel || open ? "fixed" : "hidden"}`}>
                 <div className="flex w-full h-full justify-center items-center">
                    <TempleatForam>
-                        {menu === "pengguna" ? (
+                        {listMenu === "pengguna" ? (
                         <>
                             <TempleatForam.Header 
                                 heading={edit ? "Edit Pengguna" : "Tambah Pengguna"} 
@@ -97,7 +100,13 @@ useEffect(()=> {
                                 text={isEdit ? "Ubah detail video mentor" : "Isi detail video baru"}
                             />
                             <form onSubmit={handleSubmit}>
-                                <div className="flex flex-col gap-2">
+                                <div className="grid grid-cols-[49%_49%] gap-2 items-center mt-4">
+                                    <div className="flex flex-col gap-2 md:gap-4">
+                                        <InputLabel name="title" value={foramData.title} onChange={handleChange} htmlFor="title" text="Title Video" type="text" />
+                                        <InputLabel name="sub" value={foramData.sub} onChange={handleChange} htmlFor="sub" text="Sub Video" type="text" />
+                                        <InputLabel name="imgvideo" value={foramData.imgvideo} onChange={handleChange} htmlFor="imgvideo" text="Url Gambar Video" type="text" />
+                                    </div>
+                                    <div className="flex flex-col gap-2 md:gap-4">
                                     <InputLabel 
                                         name="name"
                                         htmlFor="name" 
@@ -107,14 +116,16 @@ useEffect(()=> {
                                         onChange={handleChange}
                                     />
                                     <InputLabel name="job" value={foramData.job} onChange={handleChange} htmlFor="job" text="Pekerjaan" type="text" />
-                                    <InputLabel name="title" value={foramData.title} onChange={handleChange} htmlFor="title" text="Title Video" type="text" />
-                                    <InputLabel name="sub" value={foramData.sub} onChange={handleChange} htmlFor="sub" text="Sub Video" type="text" />
+                                    <InputLabel name="avatar" value={foramData.avatar} onChange={handleChange} htmlFor="avatar" text="Url Avatar" type="text" />
+                                    </div>
                                 </div>
+                                    <InputLabel name="harga" value={foramData.harga} onChange={handleChange} htmlFor="harga" text="Harga" type="text" />
                                 <div className="flex flex-col gap-2 mt-4">
                                     <Button type="submit" size="primary" varianstyle="primary" style="w-full">
-                                        {isEdit ? "Update Video" : "Create Video"}
+                                        {isEdit ? "Update Video" : "Create"}
                                     </Button>
                                     <Button 
+                                        type="button"
                                         onClick={() => { setOpen(false); setIsEdit(false); }} 
                                         size="primary" 
                                         varianstyle="tertiary" 
@@ -131,8 +142,11 @@ useEffect(()=> {
             </div>
             <div>
                 {
-                    menu === "pengguna" ?
+                    listMenu === "pengguna" ?
                     <div className="mt-6 border-2 border-[#3A35411F] rounded-md">
+                        {
+                            isLoading && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
+                        }
                         <div className="flex justify-between items-center py-1 md:py-2 px-6 md:px-12 border-b-2 border-[#3A35411F]">
                             <Text size="medium1" color="tertiary">Pengguna</Text>
                                 <Button onClick={()=> setCancel(true)} size="medium1" color="tertiary" style="md:hidden text-[#3ecf4c] bg-[#E2FCD9CC] cursor-pointer">+ Add</Button>
@@ -169,6 +183,9 @@ useEffect(()=> {
                     </div> : 
                     <div className="mt-4 md:mt-6">
                         <div className="border border-[#3A35411F] p-2 md:px-8 md:py-4">
+                        {
+                            isVideoLoadin && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
+                        }
                             <div className="flex justify-between pb-2 border-b-2 border-[#3A35411F]">
                                 <Heading level={3} size="medium" color="secondary">Data video</Heading>
                                 <Button onClick={()=> setOpen(true)} size="medium1" color="tertiary" style="text-[#3ecf4c] bg-[#E2FCD9CC] cursor-pointer">+ Add</Button>
@@ -176,30 +193,34 @@ useEffect(()=> {
                             <div className="flex flex-col gap-2">
                                 {
                                     dataVideo.map((video)=> (
-                                        <div key={video.id} className="grid grid-cols-[2fr_1fr_1fr] items-center mt-6">
+                                        <div key={video.id} className="grid grid-cols-[1fr_1fr_auto] gap-2 w-full border-b-2 border-[#3A35411F] pb-2 items-center mt-6">
                                             <div className="flex gap-2 md:gap-4 items-center">
-                                                <Img url={video.img} alt={video.alt} styleImg="w-10 h-10 md:w-20 md:h-20 rounded-md" />
+                                                <div className="w-10 h-10 md:w-20 md:h-20 rounded-md overflow-hidden">
+                                                    <Img url={video.imgvideo} alt="video" styleImg="w-full h-full" />
+                                                </div>
                                                 <div>
-                                                    <Heading level={6} size="xssemibold" color="secondary" style="w-20 md:w-40 txt-ellipsis line-clamp-2">{video.title}</Heading>
-                                                    <Text size="reguler2" color="primary" styleText="hidden w-[500px] md:inline-block">{video.sub}</Text>
+                                                    <Heading level={6} size="xssemibold" color="secondary" style="w-20 mobile-sm:w-30 md:w-40 lg:w-60 txt-ellipsis line-clamp-2">{video.title}</Heading>
+                                                    <Text size="reguler2" color="primary" styleText="hidden w-30 lg:w-60 txt-ellipsis md:line-clamp-2 lg:line-clamp-3">{video.sub}</Text>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-1 items-center">
+                                            <div className="flex gap-2 md:flex-col lg:flex-row">
                                                 <div className="md:w-10 md:h-10 hidden md:inline-block overflow-hidden rounded-[10px]">
-                                                    <Img url={video.profil} alt="ket" styleImg="w-full h-full" />
+                                                    <Img url={video.avatar} alt="profile" styleImg="w-full h-full" />
                                                 </div>
-                                                <div className="px-4">
+                                                <div>
                                                     <Text size="medium1" color="tertiary">{video.name}</Text>
-                                                    <Text size="reguler2" color="primary" styleText="hidden md:inline-block">{video.job}<span> di <b>Gojek</b></span></Text>
+                                                    <Text size="reguler2" color="primary" styleText="hidden md:inline-block">{video.job}</Text>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2 md:gap-8 items-center">
-                                                    <div className="hidden md:flex items-center">
+                                            <div className="flex gap-2 md:gap-4 lg:gap-6 items-center">
+                                                    <div className="hidden md:flex items-center md:gap-2 lg:gap-4">
                                                         <p>{video.rate}</p>
-                                                        <p>{video.price}</p>
+                                                        <p>Rp.{video.harga}</p>
                                                     </div>
-                                                    <RiEdit2Line onClick={()=> handleRubah(video)} className="cursor-pointer bg-[#3ecf4c] w-7 h-7 md:w-9 md:h-9 p-2 rounded-full" />
-                                                    <RiDeleteBin7Line onClick={()=> deletVideo(video.id)} className="cursor-pointer bg-red-600 w-7 h-7 md:w-9 md:h-9 p-2 rounded-full" />
+                                                    <div className="flex gap-2 md:gap-4">
+                                                        <RiEdit2Line onClick={()=> handleRubah(video)} className="cursor-pointer bg-[#3ecf4c] w-7 h-7 md:w-9 md:h-9 p-2 rounded-full" />
+                                                        <RiDeleteBin7Line onClick={()=> deletVideo(video.id)} className="cursor-pointer bg-red-600 w-7 h-7 md:w-9 md:h-9 p-2 rounded-full" />
+                                                    </div>
                                             </div>
                                         </div>
                                     ))
@@ -212,6 +233,9 @@ useEffect(()=> {
 
             {
                 isError && <Text size="medium1" styleText="text-red-600 text-center mt-2">{isError} !!!</Text>
+            }
+            {
+             isVideoError && <Text size="medium1" styleText="text-red-600 text-center mt-2">{isError} !!!</Text>
             }
         </div>
     )

@@ -4,7 +4,7 @@ const Dasboard = ({header,main}) => {
             <header className="px-4 md:px-20 py-2 md:py-4 border-b border-[#3A35411F]">
                 {header}
             </header>
-            <main className="px-4 md:px-20 py-2 md:py-4">
+            <main className="px-4 md:px-10 lg:px-20 py-2 md:py-4">
                 {main}
             </main>
         </div>

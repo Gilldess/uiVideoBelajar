@@ -1,27 +1,25 @@
-import { collectionVideo } from "../config/dataVideo";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useApiVideo from "../stores/useApiVideo";
+import { useShallow } from "zustand/shallow";
 
 export const UseVideoManager = () => {
 
-        const [dataVideo, setDataVideo] = useState(()=> {
-            const localData = localStorage.getItem("video")
-            return localData ? JSON.parse(localData) : collectionVideo
-        })
-        useEffect(()=> {
-            localStorage.setItem("video", JSON.stringify(dataVideo))
-        },[dataVideo])
-    
+        const {dataVideo, createVideo, deleteVideoId, editVideo} = useApiVideo(useShallow((state) => ({
+            dataVideo: state.dataVideo,
+            createVideo: state.createVideo,
+            deleteVideoId: state.deleteVideoId,
+            editVideo: state.editVideo
+        })))
         const [foramData, setForamData] = useState({
             id: null,
             name: "",
             job: "",
-            title: "Title video default",
-            sub: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis, sunt.",
-            img: collectionVideo[0].img,
-            profil: collectionVideo[0].profil,
+            title: "",
+            sub: "",
+            imgvideo: "",
+            avatar: "",
             rate: "3.5 (86)",
-            imgrate: collectionVideo[0].imgrate,
-            price: "Rp 300K",
+            harga: "",
 
         })
         const [open, setOpen] = useState(false)
@@ -30,22 +28,32 @@ export const UseVideoManager = () => {
             const {name, value} = e.target;
             setForamData({...foramData, [name]: value})
         }
-        const handleSubmit = (e)=> {
+        const handleSubmit = async (e)=> {
             e.preventDefault();
             if (isEdit) {
-                setDataVideo(dataVideo.map(item => (item.id === foramData.id ? foramData : item)))
-                setIsEdit(false)
+               await editVideo(foramData.id, foramData)
             } else {
-               const newData = {...foramData, id: Date.now()};
-               setDataVideo([...dataVideo, newData])
+                const newData = {
+                id: Date.now(),
+                name: foramData.name,
+                job: foramData.job,
+                title: foramData.title,
+                sub: foramData.sub,
+                imgvideo: foramData.imgvideo,
+                avatar: foramData.avatar,
+                rate: foramData.rate,
+                harga: foramData.harga,
+               }
+               await createVideo(newData)
             }
-    
             setForamData({
-                id: null,
                 name: "",
                 job: "",
-                title: "",
+                title: "",       
                 sub: "",
+                imgvideo: "",
+                avatar: "",
+                harga: "",
             })
             setOpen(false)
         }
@@ -54,10 +62,10 @@ export const UseVideoManager = () => {
             setIsEdit(true);
             setOpen(true)
     }
-        const deletVideo = (id) => {
-            if(window.confirm("Anda yakin ingin menghapus data ini?")) {
-                setDataVideo(dataVideo.filter(item => item.id !== id))
-            }
+        const deletVideo = async (id) => {
+            const confrim = window.confirm("Anda yakin ingin menghapus data ini?")
+            if (!confrim) return;
+            await deleteVideoId(id)
         }
-        return {dataVideo, setDataVideo, foramData, setForamData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo}
+        return {dataVideo, foramData, setForamData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo}
 }
