@@ -1,15 +1,9 @@
 import { useState } from "react";
-import useApiVideo from "../stores/useApiVideo";
-import { useShallow } from "zustand/shallow";
+import { addVideo, updateVideo, deletDataVideo } from "../stores/redux/videoReducer";
+import { useDispatch } from "react-redux";
 
 export const UseVideoManager = () => {
-
-        const {dataVideo, createVideo, deleteVideoId, editVideo} = useApiVideo(useShallow((state) => ({
-            dataVideo: state.dataVideo,
-            createVideo: state.createVideo,
-            deleteVideoId: state.deleteVideoId,
-            editVideo: state.editVideo
-        })))
+        const dispatch = useDispatch()
         const [foramData, setForamData] = useState({
             id: null,
             name: "",
@@ -28,10 +22,10 @@ export const UseVideoManager = () => {
             const {name, value} = e.target;
             setForamData({...foramData, [name]: value})
         }
-        const handleSubmit = async (e)=> {
+        const handleSubmit = (e)=> {
             e.preventDefault();
             if (isEdit) {
-               await editVideo(foramData.id, foramData)
+                dispatch(updateVideo({id: foramData.id, items: foramData}))
             } else {
                 const newData = {
                 id: Date.now(),
@@ -44,7 +38,7 @@ export const UseVideoManager = () => {
                 rate: foramData.rate,
                 harga: foramData.harga,
                }
-               await createVideo(newData)
+                dispatch(addVideo(newData))
             }
             setForamData({
                 name: "",
@@ -62,10 +56,10 @@ export const UseVideoManager = () => {
             setIsEdit(true);
             setOpen(true)
     }
-        const deletVideo = async (id) => {
+        const deletVideo = (id) => {
             const confrim = window.confirm("Anda yakin ingin menghapus data ini?")
             if (!confrim) return;
-            await deleteVideoId(id)
+            dispatch(deletDataVideo(id))
         }
-        return {dataVideo, foramData, setForamData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo}
+        return {foramData, setForamData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo}
 }

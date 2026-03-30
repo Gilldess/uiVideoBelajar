@@ -1,27 +1,15 @@
-import { useEffect, useState } from "react"
-import useApiUsers from "../stores/useApiUsers"
-import { useShallow } from "zustand/shallow"
+import { useState } from "react"
+import { addUsers, deleteUsers, updateUsers } from "../stores/redux/usersReducer"
+import { useDispatch } from "react-redux"
 
-export const UserManager = (users) => {
-        const {postUsers, deletUser, editUser}=useApiUsers(useShallow ((state) => ({
-            postUsers: state.postUsers,
-            deletUser: state.deletUser,
-            editUser: state.editUser
-        })))
-        const [data, setData] = useState(()=> {
-        const localData = localStorage.getItem("userdata")
-        return localData ? JSON.parse(localData) : users
-    })
-
-    useEffect(()=> {
-        localStorage.setItem("userdata", JSON.stringify(data))
-    }, [data])
-
+export const UserManager = () => {
+    
+    const dispatch = useDispatch()
     const [edit, setEdit] = useState(null)
     const [editValue, setEditValue] = useState({name: "", email: "", nomer: ""})
     const [cancel, setCancel] = useState(false)
 
-    const HandleCreate = async (e) => {
+    const HandleCreate = (e) => {
         e.preventDefault();
         if (editValue.name === "" || editValue.email === "" || editValue.nomer === "") {
             alert("Lengkapi Form Anda")
@@ -33,15 +21,15 @@ export const UserManager = (users) => {
             email: editValue.email,
             nomer: editValue.nomer
         }
-        await postUsers(newData)
+        dispatch(addUsers(newData))
         setEditValue({name: "", email: "", nomer: ""})
         setCancel(false)
     }
 
-    const handleDelete = async (id)=> {
+    const handleDelete = (id)=> {
         const confirmDelete = window.confirm("Anda yakin ingin menghapus data ini?")
         if (!confirmDelete) return; 
-        await deletUser(id)
+        dispatch(deleteUsers(id))
     }
     const handleEdit = (user)=> {
         setEdit(user.id)
@@ -53,11 +41,12 @@ export const UserManager = (users) => {
         setEdit(null);
         setEditValue({name: "", email: "", nomer: ""})
     }
-    const HandleUpdate = async (e) => {
+    const HandleUpdate = (e) => {
         e.preventDefault();
-        await editUser(editValue.id, editValue)
+        console.log(editValue)
+        dispatch(updateUsers({id: editValue.id, data: editValue}))
         HandleCancel()
     }
     
-    return {data, setData, edit, setEdit, editValue, setEditValue, cancel, setCancel, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate,}
+    return { edit, setEdit, editValue, setEditValue, cancel, setCancel, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate,}
 }

@@ -7,28 +7,29 @@ import { UserManager } from "../../hooks/UserManager";
 import { UseVideoManager } from "../../hooks/UseVideoManager";
 import Heading from "../atoms/Heading";
 import Img from "../atoms/Img";
-import useApiUsers from "../../stores/useApiUsers";
-import { useShallow } from "zustand/shallow";
-import { useEffect } from "react";
-import useListMenu from "../../stores/useListMenu";
-import useApiVideo from "../../stores/useApiVideo";
+import { useEffect, useState } from "react";
+import { fetchUsers} from "../../stores/redux/usersReducer"
+import { getVideo } from "../../stores/redux/videoReducer"
+import { useDispatch, useSelector } from "react-redux";
 
 const Data = () => {
-    const {dataUsers, isError, isLoading, getAllUsers} = useApiUsers(useShallow((state)=> ({
-        dataUsers: state.dataUsers,
-        isError: state.isError,
-        isLoading: state.isLoading,
-        getAllUsers: state.getAllUsers
-    })))
     const { edit, editValue, setEditValue, cancel, setCancel, HandleCreate, handleDelete, handleEdit, HandleCancel, HandleUpdate} = UserManager()
     const { foramData, open, setOpen, isEdit, setIsEdit, handleChange, handleSubmit, handleRubah, deletVideo} = UseVideoManager()
-    const {listMenu, setListMenu} = useListMenu(useShallow((state) => ({listMenu: state.listMenu, setListMenu: state.setListMenu})))
-    const {dataVideo, isVideoLoadin, isVideoError, getVideo} = useApiVideo(useShallow((state) => ({
-        dataVideo: state.dataVideo,
-        getVideo: state.getVideo,
-        isVideoError: state.isVideoError,
-        isVideoLoadin: state.isVideoLoading
-    })))
+
+    const [listMenu, setListMenu] = useState(()=> {
+        return localStorage.getItem("OpenMenu")
+    })
+
+    const handleOpenMenu = (status) => {
+        const OpenMenu = status
+        setListMenu(OpenMenu)
+        localStorage.setItem("OpenMenu", OpenMenu)
+    }
+
+
+    const { users, status, error } = useSelector((state) => state.userStore)
+    const { videos , status: videoStatus, error: videoError } = useSelector((state) => state.videoStore)
+    const dispatch = useDispatch();
 
     const handleChangeValue = (e) => {
         const {name, value} = e.target;
@@ -36,23 +37,20 @@ const Data = () => {
     }
 
 useEffect(()=> {
-    const fetch = async () => {
-        await getAllUsers()
-        await getVideo()
-    }
-    fetch()
+    dispatch(fetchUsers())
+    dispatch(getVideo())
 },[])
 
     return (
         <div>
             <div className="flex gap-4 md:gap-8 px-4 py-2 border w-fit rounded-md border-[#3A35411F]">
-                <Button style={`border-b-2 rounded-none ${listMenu === "pengguna" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setListMenu("pengguna")}>Pengguna</Button>
-                <Button style={`border-b-2 rounded-none ${listMenu === "koleksi" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> setListMenu("koleksi")}>Koleksi</Button>
+                <Button style={`border-b-2 rounded-none ${listMenu == "pengguna" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> handleOpenMenu("pengguna")}>Pengguna</Button>
+                <Button style={`border-b-2 rounded-none ${listMenu == "koleksi" ? "border-[#3ecf4c] text-[#333333AD]" : "border-transparent"}`} onClick={()=> handleOpenMenu("koleksi")}>Koleksi</Button>
             </div>
             <div className={`inset-0 w-full h-full bg-black/70 ${cancel || open ? "fixed" : "hidden"}`}>
                 <div className="flex w-full h-full justify-center items-center">
                    <TempleatForam>
-                        {listMenu === "pengguna" ? (
+                        {listMenu == "pengguna" ? (
                         <>
                             <TempleatForam.Header 
                                 heading={edit ? "Edit Pengguna" : "Tambah Pengguna"} 
@@ -142,10 +140,10 @@ useEffect(()=> {
             </div>
             <div>
                 {
-                    listMenu === "pengguna" ?
+                    listMenu == "pengguna" ?
                     <div className="mt-6 border-2 border-[#3A35411F] rounded-md">
                         {
-                            isLoading && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
+                            status === "loading" && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
                         }
                         <div className="flex justify-between items-center py-1 md:py-2 px-6 md:px-12 border-b-2 border-[#3A35411F]">
                             <Text size="medium1" color="tertiary">Pengguna</Text>
@@ -158,7 +156,7 @@ useEffect(()=> {
                         </div>
                         <div className="flex flex-col gap-4 py-4 px-4 md:px-8">
                             {
-                               dataUsers.length > 0 ? dataUsers.map((user)=> (
+                               users.length > 0 ? users.map((user)=> (
                                     <div key={user.id} className="flex justify-between items-center pb-2 border-b-2 border-[#3A35411F]">
                                         <div className="flex flex-col md:flex-row gap-1 md:gap-8 md:items-center" >
                                             <Text size="medium1" color="tertiary" styleText="break-all w-40 line-clamp-2">{user.name}</Text>
@@ -184,7 +182,7 @@ useEffect(()=> {
                     <div className="mt-4 md:mt-6">
                         <div className="border border-[#3A35411F] p-2 md:px-8 md:py-4">
                         {
-                            isVideoLoadin && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
+                            videoStatus === "loading" && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
                         }
                             <div className="flex justify-between pb-2 border-b-2 border-[#3A35411F]">
                                 <Heading level={3} size="medium" color="secondary">Data video</Heading>
@@ -192,7 +190,7 @@ useEffect(()=> {
                             </div>
                             <div className="flex flex-col gap-2">
                                 {
-                                    dataVideo.map((video)=> (
+                                    videos.length > 0 ? videos.map((video)=> (
                                         <div key={video.id} className="grid grid-cols-[1fr_1fr_auto] gap-2 w-full border-b-2 border-[#3A35411F] pb-2 items-center mt-6">
                                             <div className="flex gap-2 md:gap-4 items-center">
                                                 <div className="w-10 h-10 md:w-20 md:h-20 rounded-md overflow-hidden">
@@ -223,7 +221,11 @@ useEffect(()=> {
                                                     </div>
                                             </div>
                                         </div>
-                                    ))
+                                    )) :
+                                    <div className="text-center">
+                                        <Text size="medium1" color="primary" styleText="mb-2">`(*&gt;﹏&lt;*)′</Text>
+                                        <Text size="medium1" color="tertiary">Belum Ada Data</Text>
+                                    </div>
                                 }
                             </div>
                         </div>
@@ -232,10 +234,10 @@ useEffect(()=> {
             </div>
 
             {
-                isError && <Text size="medium1" styleText="text-red-600 text-center mt-2">{isError} !!!</Text>
+             status === "failed" && <Text size="medium1" styleText="text-red-600 text-center mt-2">Error: {error} !!!</Text>
             }
             {
-             isVideoError && <Text size="medium1" styleText="text-red-600 text-center mt-2">{isError} !!!</Text>
+             videoError === "failed" && <Text size="medium1" styleText="text-red-600 text-center mt-2"> Error: {error} !!!</Text>
             }
         </div>
     )

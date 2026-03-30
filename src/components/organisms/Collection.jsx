@@ -3,20 +3,16 @@ import Text from "../atoms/Text";
 import { useEffect, useState } from "react";
 import Card from "../molecules/Card";
 import Button from "../atoms/Button";
-import useApiVideo from "../../stores/useApiVideo";
-import { useShallow } from "zustand/shallow";
 import imgRate from "../../assets/img/Rating.png";
+import { getVideo } from "../../stores/redux/videoReducer";
+import { useDispatch, useSelector } from "react-redux";
 
 const Collection = () => {
-  const { dataVideo, getVideo } = useApiVideo(useShallow((state) => ({ dataVideo: state.dataVideo, getVideo: state.getVideo })))
+  const dispatch = useDispatch();
+  const { videos, status, error } = useSelector((state) => state.videoStore)
   useEffect(()=> {
-    const fetch = async () => {
-      await getVideo()  
-    }
-    fetch()
+    dispatch(getVideo())
   },[])
-
-  console.log("Tipe dataVideo:", typeof dataVideo, Array.isArray(dataVideo));
   const filters = [
     "Semua Kelas",
     "Pemasaran",
@@ -27,6 +23,9 @@ const Collection = () => {
   const [activeFilter, setActiveFilter] = useState("Semua Kelas");
   return (
     <div className="flex flex-col md:gap-8 gap-6">
+      {
+        status === "loading" && <Text styleText="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/50 w-full h-full flex justify-center items-center" color="secondary" size="medium1">Loading...</Text>
+      }
       <div>
         <Heading level={3} size="medium" color="secondary">
           Koleksi Video Pembelajaran Unggulan
@@ -62,9 +61,16 @@ const Collection = () => {
       </select>
       <div className="flex flex-wrap gap-4 xl:gap-6">
         {
-          (dataVideo || []).map((item) => (
+          videos.length > 0 ? videos.map((item) => (
             <Card key={item.id} imgclass={item.imgvideo} heading={item.title} sub={item.sub} imgpp={item.avatar} name={item.name} job={item.job} imgrate={imgRate} rate={item.rate} price={item.harga}/>
-          ))
+          )) :
+           <div className="text-center">
+              <Text size="medium1" color="primary" styleText="mb-2">`(*&gt;﹏&lt;*)′</Text>
+              <Text size="medium1" color="tertiary">Belum Ada Data</Text>
+            </div>
+        }
+        {
+          status === "failed" && <Text size="medium1" styleText="text-red-600 text-center mt-2">Gagal Memuat Data: {error}</Text>
         }
         </div>
     </div>
